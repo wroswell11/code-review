@@ -11,7 +11,7 @@ import java.util.Optional;
 public class EmailService {
 
     public void sendConfirmation(String email) {
-        System.out.print("sending confirmation to " + email);
+        System.out.println("sending confirmation to " + email);
     }
 
 }

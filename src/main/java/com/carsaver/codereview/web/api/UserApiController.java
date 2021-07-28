@@ -8,39 +8,50 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-@Controller
+/*
+* Changed Controller to RestController
+* RestController is a convenience annotation which acts like both @Controller and @ResponseBody
+*/
+@RestController
 public class UserApiController {
 
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
     @Autowired
-    private EmailService emailService;
+    EmailService emailService;
 
     @Autowired
-    private ZipCodeLookupService zipCodeLookupService;
+    ZipCodeLookupService zipCodeLookupService;
 
     @GetMapping("/users/create")
-    public User createuser(@RequestParam String firstName, @RequestParam String lastName, @RequestParam String email) {
+    public User createUser(@RequestParam String firstName, @RequestParam String lastName, @RequestParam String email) {
         User newUser = new User();
         newUser.setFirstName(firstName);
         newUser.setLastName(lastName);
         newUser.setEmail(email);
+        newUser.enabled = false;
 
+        /*
+        * Changed create 'createuser' to camel-case 'createUser'
+        * Added an value for the newUser.enabled field so it wasn't null
+        * Removed the extra 'User' object
+        * Combined the two if statements
+        * Returned the results of the save
+        */
         if(!email.contains("@test.com")) {
             newUser.enabled = true;
-        }
-
-        User user = userRepository.save(newUser);
-
-        if(user.isEnabled()) {
             emailService.sendConfirmation(email);
         }
 
-        return user;
+        /*
+        * Should we save an account with an invalid email?
+         */
+        return userRepository.save(newUser);
     }
 
     /**
@@ -52,16 +63,20 @@ public class UserApiController {
      */
     @GetMapping("/users/updateLocation")
     public User updateUserLocation(@RequestParam Long id, @RequestParam String zipCode, @RequestParam(required = false) String city) {
+        /*
+        * Exception handling
+         */
         User user = userRepository.findById(id).orElseThrow();
 
         user.setZipCode(zipCode);
-        user.setCity(Optional.ofNullable(city).orElse(zipCodeLookupService.lookupCityByZip(zipCode)));
+        user.setCity(city != null ? city : zipCodeLookupService.lookupCityByZip(zipCode));
+        //user.setCity(Optional.ofNullable(city).orElse(zipCodeLookupService.lookupCityByZip(zipCode)));
 
         return userRepository.save(user);
     }
 
     @GetMapping("/users/delete")
-    public void deleteUser(@RequestParam String userid) {
-        userRepository.deleteById(Long.parseLong(userid));
+    public void deleteUser(@RequestParam String userId) {
+        userRepository.deleteById(Long.parseLong(userId));
     }
 }

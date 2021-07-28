@@ -22,6 +22,16 @@ databaseChangeLog:
         - column:
             name: email
             type: VARCHAR(255)
+        - column:
+            name: city
+            type: VARCHAR(255)
+        - column:
+            name: zip_code
+            type: VARCHAR(255)
+        - column:
+            name: enabled
+            type: boolean
+
 - changeSet:
       id: populate user table
       author: josh
@@ -38,3 +48,12 @@ databaseChangeLog:
                     - column:
                           name: email
                           value: "josh.colbert@carsaver.com"
+                    - column:
+                          name: city
+                          value: "Franklin"
+                    - column:
+                          name: zip_code
+                          value: "37067"
+                    - column:
+                          name: enabled
+                          value: true

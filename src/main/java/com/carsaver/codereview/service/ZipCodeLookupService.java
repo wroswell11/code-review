@@ -10,7 +10,7 @@ public class ZipCodeLookupService {
      * @return - returns city for the given zipCode.
      */
     public String lookupCityByZip(String zipCode) {
-        System.out.print("looking up city by zipCode (this might take a while)");
+        System.out.println("looking up city by zipCode (this might take a while)");
 
         try {
             //simulating a high latency call
@@ -19,7 +19,7 @@ public class ZipCodeLookupService {
 
         }
 
-        return "37067";
+        return zipCode;
     }
 
 }
